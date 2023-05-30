@@ -1,48 +1,38 @@
-#!/usr/bin/env bash
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 
-check_factor()
-{
-	if [ $# -ne 3 ];
-        then
-                args=("$@")
-                count=0
-                num2=1
-                for a in ${args[*]};
-                do
-                        if [ $count -gt 1 ];
-                        then
-                                num2=$(echo $a*$num2 | bc)
-                        fi
-                        count=$((count + 1))
-                done
-        else
-                num2=$3
-        fi
+void factorize(int number) {
+    int factor = 2;
 
-        num1=$2
-        num=$(echo "$1" | tr ':' '=')
+    while (number > 1) {
+        if (number % factor == 0) {
+            printf("%d=%d*%d\n", number, factor, number / factor);
+            number /= factor;
+        } else {
+            factor++;
+        }
+    }
 
-        result=$(echo "if($num2 > $num1) 1 else 0" | bc)
-	        if ((result == 1)); then
-		        numcp=$num1
-		        num1=$num2
-		        num2=$numcp
-                fi
 
-        echo "$num$num1*$num2"
-}
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        printf("Usage: %s <file>\n", argv[0]);
+        return 1;
+    }
 
-if [ $# -ne 1 ]
-then
-        echo 'Usage: factors <file>'
-        exit 1
-else
+    FILE *file = fopen(argv[1], "r");
+    if (file == NULL) {
+        printf("Error opening file.\n");
+        return 1;
+    }
 
-        while read i
-        do
+    char line[100];
+    while (fgets(line, sizeof(line), file)) {
+        int number = atoi(line);
+        factorize(number);
+    }
 
-                result=$(factor "$i")
-                check_factor $result
+    fclose(file);
+    return 0;
 
-        done < "$1"
-fi
