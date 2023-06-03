@@ -1,23 +1,38 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 
-int main()
-{
-    long long int num = 239809320265259;
-    long int factor1 = 2;
-    long int factor2;
+void factorize(int number) {
+    int factor = 2;
 
-    while (num % factor1)
-    {
-        if (factor1 <= num)
-        {
-            factor1++;
-        }
-        else {
-            return (-1);
+    while (number > 1) {
+        if (number % factor == 0) {
+            printf("%d=%d*%d\n", number, factor, number / factor);
+            number /= factor;
+        } else {
+            factor++;
         }
     }
+}
 
-    factor2 = num / factor1;
-    printf("%lld = %ld * %ld\n", num, factor2, factor1);
-    return (0);
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        printf("Usage: %s <file>\n", argv[0]);
+        return 1;
+    }
+
+    FILE *file = fopen(argv[1], "r");
+    if (file == NULL) {
+        printf("Error opening file.\n");
+        return 1;
+    }
+
+    char line[100];
+    while (fgets(line, sizeof(line), file)) {
+        int number = atoi(line);
+        factorize(number);
+    }
+
+    fclose(file);
+    return 0;
 }
